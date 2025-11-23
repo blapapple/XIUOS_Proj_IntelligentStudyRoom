@@ -36,7 +36,7 @@ int main(void)
     // StopSensorTasks();
     // k210_detect("face.json");
 
-    // WifiInitAndConnect("Factory", "00000000");
+    WifiInitAndConnect("Factory", "00000000");
     // MqttTest();
 
     printf("Creating parallel tasks for all...\n");

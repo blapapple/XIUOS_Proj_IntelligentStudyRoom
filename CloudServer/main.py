@@ -256,25 +256,25 @@ class LightStateManager:
         
         # 环境状态阈值
         self.TEMP_THRESHOLDS = {
-            "very_cold": 10,     # 很冷
-            "cold": 16,          # 冷
-            "comfortable": 22,   # 舒适
-            "warm": 28,          # 温暖
-            "hot": 32            # 热
+            "very_cold": 26,     # 很冷
+            "cold": 27,          # 冷
+            "comfortable": 28,   # 舒适
+            "warm": 29,          # 温暖
+            "hot": 30            # 热
         }
         
         self.HUMIDITY_THRESHOLDS = {
-            "dry": 30,          # 干燥
-            "comfortable": 50,  # 舒适
-            "humid": 70,        # 潮湿
-            "very_humid": 80    # 很潮湿
+            "dry": 55,          # 干燥
+            "comfortable": 60,  # 舒适
+            "humid": 65,        # 潮湿
+            "very_humid": 70    # 很潮湿
         }
         
         self.LIGHT_THRESHOLDS = {
-            "dark": 10,         # 暗
-            "dim": 50,          # 昏暗
-            "normal": 200,      # 正常
-            "bright": 500       # 明亮
+            "dark": 50,         # 暗
+            "dim": 80,          # 昏暗
+            "normal": 150,      # 正常
+            "bright": 200       # 明亮
         }
 
     def temperature_to_color(self, temperature: float) -> Tuple[int, int, int]:
@@ -313,17 +313,17 @@ class LightStateManager:
     def calculate_brightness(self, light_intensity: float, person_present: bool) -> int:
         """根据光照强度计算灯泡亮度"""
         if not person_present:
-            return 0  # 无人时关闭亮度
+            return 1  # 无人时关闭亮度
         
         # 有人时，根据环境光照自动调整亮度
         if light_intensity < self.LIGHT_THRESHOLDS["dark"]:
-            return 80  # 很暗环境用较高亮度
+            return 40  # 很暗环境用较高亮度
         elif light_intensity < self.LIGHT_THRESHOLDS["dim"]:
-            return 60
+            return 30
         elif light_intensity < self.LIGHT_THRESHOLDS["normal"]:
-            return 40
+            return 20
         else:
-            return 20  # 明亮环境用较低亮度
+            return 10  # 明亮环境用较低亮度
 
     def create_weather_flow(self, temperature: float, humidity: float) -> List[Dict]:
         """创建基于温湿度的动态流动效果"""
@@ -402,16 +402,16 @@ class LightStateManager:
                 response['brightness'] = brightness
                 
                 # 停止之前的流动效果
-                self.light_client.stop_color_flow()
+                # self.light_client.stop_color_flow()
                 
                 # 根据温湿度创建动态效果
                 if humidity > self.HUMIDITY_THRESHOLDS["humid"] or temperature > self.TEMP_THRESHOLDS["warm"]:
                     # 高湿度或高温度：启动流动效果
-                    flow_expression = self.create_weather_flow(temperature, humidity)
-                    self.light_client.start_color_flow(flow_expression)
+                    # flow_expression = self.create_weather_flow(temperature, humidity)
+                    # self.light_client.start_color_flow(flow_expression)
                     self.current_mode = "weather_flow"
                     response['effect'] = "weather_flow"
-                    logger.info(f"启动天气流动效果，温度: {temperature}°C, 湿度: {humidity}%")
+                    logger.info(f"温度: {temperature}°C, 湿度: {humidity}%")
                 else:
                     # 正常情况：固定颜色
                     color = self.temperature_to_color(temperature)
