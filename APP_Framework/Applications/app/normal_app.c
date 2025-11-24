@@ -73,8 +73,7 @@ void TemperatureTask(void *parameter)
                 sensor_data.temperature = -temperature/10.0f;
             }
         }
-        /* 任务延迟3秒 */
-        UserTaskDelay(2000);
+        UserTaskDelay(500);
     }
 }
 
@@ -97,7 +96,7 @@ void HumidityTask(void *parameter)
             printf("Humidity : %d.%d %%RH\n", humidity/10, humidity%10);
             sensor_data.humidity = humidity/10.0f;
         }
-        UserTaskDelay(2000);
+        UserTaskDelay(500);
     }
 }
 
@@ -124,8 +123,8 @@ void LightTask(void *parameter)
                 sensor_data.light_intensity = -1.0f;  // 错误值标记
             }
         }
-        /* 任务延迟3秒 */
-        UserTaskDelay(2000);
+        /* 任务延迟0.5秒 */
+        UserTaskDelay(500);
     }
 }
 
@@ -150,7 +149,7 @@ void DetectReceiveTask(void *parameter)
         printf("\n=== Detect Measurement ===\n");
         printf("Data: existing_object_count: %d\n", existing_object_count);
         sensor_data.person_present = existing_object_count > 0 ? 1 : 0;
-        UserTaskDelay(2000);
+        UserTaskDelay(500);
     }
 }
 
@@ -269,7 +268,6 @@ int CreateAndStartTasks(char* mqtt_ipv4, char* mqtt_port)
         return -1;
     }
 
-    UserTaskDelay(500); // 长一点
     if (UserTaskStartup(detect_receive_task_id) != EOK) {
         printf(" Failed to start detect_receive task\n");
         UserTaskDelete(detect_receive_task_id);
@@ -294,7 +292,7 @@ int CreateAndStartTasks(char* mqtt_ipv4, char* mqtt_port)
         UserTaskDelete(light_task_id);
         return -1;
     }
-	UserTaskDelay(100);
+
     if (UserTaskStartup(mqtt_task_id) != EOK) {
         printf(" Failed to start mqtt task\n");
         UserTaskDelete(mqtt_task_id);
@@ -449,7 +447,7 @@ MQTT_CONNECT:
     uint8_t recv_buf[512];
 
     while (1) {
-        UserTaskDelay(5000);
+        UserTaskDelay(500);
 
         // 尝试接收消息并反序列化 PUBLISH 载荷
         ssize_t recv_len = AdapterDeviceRecv(g_mqtt_adapter, recv_buf, sizeof(recv_buf));
